@@ -6,11 +6,17 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null); // State to hold error message
   const navigate = useNavigate();
+  const noify = () => toast.error("Invalid email or password");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(email, password);
@@ -28,11 +34,14 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.log(error);
+      setError("Invalid email or password"); // Set error message
+      noify();
     }
   };
+
   return (
     <div className="App">
-      <h1>login</h1>
+      <h1>Login</h1>
       <form onSubmit={handleSubmit} className="login-form">
         <TextField
           type="email"
@@ -56,6 +65,8 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           sx={{ display: "flex", flexDirection: "column" }}
         />
+        {error && <p style={{ color: "red" }}>{error}</p>}{" "}
+        {/* Render error message if present */}
         <Button
           sx={{
             flexDirection: "column",
@@ -71,6 +82,7 @@ const Login = () => {
         >
           Login
         </Button>
+        <ToastContainer />
         <p>
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </p>
@@ -78,4 +90,5 @@ const Login = () => {
     </div>
   );
 };
+
 export default Login;

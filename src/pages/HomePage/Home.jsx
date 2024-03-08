@@ -1,6 +1,6 @@
 import { Button, TextField, Typography } from "@mui/material";
 import { signOut } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import DrawerComponent from "../../components/AddingDrawer";
@@ -12,6 +12,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import DeleteClosingForm from "../../components/DeleteDialog";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,11 +27,22 @@ const Home = () => {
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("");
   const [filteredTasks, setFilteredTasks] = useState([]);
+  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState(false);
+  const [deletingTaskId, setDeletingTaskId] = useState(null);
+  const closeDeleteDialog = () => {
+    setIsOpenDeleteDialog(false);
+  };
+  const openDeleteDialog = (id) => {
+    setIsOpenDeleteDialog(true);
+    setDeletingTaskId(id);
+  };
+  const notify = () => toast.success("Note added!");
+
   const deleteTask = (id) => {
     const newTasks = tasks.filter((task) => task._id !== id);
     setTasks(newTasks);
   };
-  const handleAddItem = async (data) => {
+  const handleAddItem = useCallback(async (data) => {
     try {
       if (!data.title) {
         data = { ...data, title: "Untitled" };
@@ -41,10 +56,11 @@ const Home = () => {
       });
 
       toggleDrawer();
+      notify();
     } catch (error) {
       throw error;
     }
-  };
+  });
 
   const editTask = (id, data) => {
     const newTasks = tasks.map((task) => {
@@ -85,29 +101,34 @@ const Home = () => {
     navigate("/login");
   };
 
-  useEffect(() => {
-    if (filter === "Pinned") {
-      setFilteredTasks(tasks.filter((task) => task.pinned));
-    } else if (filter === "Not Pinned") {
-      setFilteredTasks(tasks.filter((task) => !task.pinned));
-    } else {
-      setFilteredTasks(tasks);
-    }
-  }, [filter, tasks]);
+  // useEffect(() => {
+  //   if (filter === "Completed") {
+  //     setFilteredTasks(tasks.filter((task) => task.pinned));
+  //   } else if (filter === "Not Completed") {
+  //     setFilteredTasks(tasks.filter((task) => !task.pinned));
+  //   }
+  // }, [filter, tasks]);
 
   useEffect(() => {
+    let newTasks = [...tasks];
     if (sort === "from New to Old") {
-      setFilteredTasks(
-        [...tasks].sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+      newTasks = [...tasks].sort(
+        (a, b) => new Date(b.dueDate) - new Date(a.dueDate)
       );
     } else if (sort === "from Old to New") {
-      setFilteredTasks(
-        [...tasks].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+      newTasks = [...tasks].sort(
+        (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
       );
-    } else {
-      // No sorting applied
+    } else if (sort === "Recently Added") {
+      newTasks = [...tasks];
     }
-  }, [sort, tasks, handleAddItem]);
+    if (filter === "Completed") {
+      newTasks = newTasks.filter((task) => task.pinned);
+    } else if (filter === "Not Completed") {
+      newTasks = newTasks.filter((task) => !task.pinned);
+    }
+    setFilteredTasks(newTasks);
+  }, [sort, tasks, handleAddItem, filter]);
 
   // This effect ensures that filtering is applied after tasks state is updateds
 
@@ -126,8 +147,9 @@ const Home = () => {
   };
   return (
     <div>
+      <ToastContainer />
       <Typography
-        variant="h4"
+        variant="h6"
         fontFamily="Roboto, Arial, sans-serif"
         fontWeight="bold"
         color="primary"
@@ -147,13 +169,14 @@ const Home = () => {
           variant="contained"
           onClick={toggleDrawer}
           sx={{
-            marginLeft: "20px",
+            marginLeft: "10px",
             padding: "10px",
-            marginTop: "10px",
-            height: "25px",
+            marginTop: "8px",
+            height: "30px",
+            borderRadius: "10px",
           }}
         >
-          <Typography fontSize={12}>Add Task</Typography>
+          <Typography fontSize={14}>Add Task</Typography>
           <AddIcon
             sx={{ marginLeft: "3px", marginBottom: "3px" }}
             fontSize="small"
@@ -173,8 +196,8 @@ const Home = () => {
             sx={{
               display: "inline-block",
               "& input": {
-                width: 200,
-                height: "30px",
+                width: 150,
+                height: "20px",
                 bgcolor: "background.paper",
                 color: (theme) =>
                   theme.palette.getContrastText(theme.palette.background.paper),
@@ -183,12 +206,10 @@ const Home = () => {
                 marginRight: "10px",
               },
             }}
+            value={sort}
             id="custom-input-demo"
-            options={["from New to Old", "from Old to New", "None"]}
+            options={["from New to Old", "from Old to New", "Recently Added"]}
             onChange={(event, value) => {
-              if (value === "None") {
-                setSort("");
-              }
               setSort(value || ""); // Set the filter with the selected value
             }}
             renderInput={(params) => (
@@ -198,6 +219,23 @@ const Home = () => {
             )}
           />
         </label>
+        <Button
+          variant="contained"
+          onClick={() => setSort("")}
+          color="error"
+          sx={{
+            marginTop: "12px",
+            cursor: "pointer",
+            borderRadius: "8px",
+            minWidth: "45px", // Use minWidth instead of width to allow the button to shrink
+            height: "20px",
+            padding: "0px",
+            fontSize: "10px", // Adjust font size to fit within the smaller button
+          }}
+        >
+          Clear
+        </Button>
+
         <Typography
           variant="h7"
           fontFamily="Roboto, Arial, sans-serif"
@@ -210,27 +248,34 @@ const Home = () => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={filter === "Pinned"}
-              onChange={() => handleCheckboxChange("Pinned")}
+              checked={filter === "Completed"}
+              onChange={() => handleCheckboxChange("Completed")}
             />
           }
-          label="Pinned"
+          label="Completed"
         />
         <FormControlLabel
           control={
             <Checkbox
-              checked={filter === "Not Pinned"}
-              onChange={() => handleCheckboxChange("Not Pinned")}
+              checked={filter === "Not Completed"}
+              onChange={() => handleCheckboxChange("Not Completed")}
             />
           }
-          label="Not Pinned"
+          label="Not Completed"
         />
       </div>
+
+      <DeleteClosingForm
+        open={isOpenDeleteDialog}
+        handleClose={closeDeleteDialog}
+        deleteTask={deleteTask}
+        taskId={deletingTaskId}
+      ></DeleteClosingForm>
 
       <Button
         variant="contained"
         onClick={handleLogout}
-        sx={{ right: 5, position: "fixed", marginTop: "10px", top: 0 }}
+        sx={{ right: 5, position: "fixed", bottom: 5 }}
       >
         Logout
         <LogoutIcon />
@@ -246,7 +291,7 @@ const Home = () => {
       />
       <TasksGrid
         tasks={filteredTasks}
-        handleDelete={deleteTask}
+        handleDelete={openDeleteDialog}
         handlePinned={handlePinned}
         openEditModal={openEditModal}
         setEditingTaskId={setEditingTaskId}
