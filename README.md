@@ -2,6 +2,33 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+### Introduction
+
+The Task Manager application is a web-based task management tool developed using the React framework. It offers users a convenient platform to organize their tasks efficiently.
+
+### Features
+
+- Authentication
+
+  : Utilizing Firebase authentication, the application ensures secure access for users. A predefined user account is available for testing purposes, with the following credentials:
+
+  - Email: `a@a.com`
+  - Password: `12345678`Users also have the option to sign up with their own credentials for personalized access.
+
+- **Task Management**: Tasks are stored locally, providing users with seamless access to their task lists across sessions. Users can add, edit, and remove tasks as needed, facilitating effective task management.
+
+### Deployment
+
+The application is deployed using Netlify, ensuring accessibility and reliability for users. The deployment process ensures that the application is readily available for use, offering a smooth user experience.
+
+### Getting Started
+
+To begin using the Task Manager application, follow these steps:
+
+1. Access the application using the provided URL or deploy it locally.
+2. Sign in using the provided credentials or register with your own account.
+3. Start managing your tasks efficiently, utilizing the intuitive interface and features offered by the application.
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -61,10 +88,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/m
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+1. ​
