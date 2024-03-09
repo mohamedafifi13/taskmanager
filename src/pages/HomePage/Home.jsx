@@ -29,6 +29,8 @@ const Home = () => {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState(false);
   const [deletingTaskId, setDeletingTaskId] = useState(null);
+  const [user, setUser] = useState(null);
+
   const closeDeleteDialog = () => {
     setIsOpenDeleteDialog(false);
   };
@@ -42,6 +44,33 @@ const Home = () => {
     const newTasks = tasks.filter((task) => task._id !== id);
     setTasks(newTasks);
   };
+  useEffect(() => {
+    // Check if user is authenticated
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        // Set user and retrieve tasks associated with the user
+        setUser(authUser);
+        const storedTasks = JSON.parse(localStorage.getItem(authUser.uid));
+        if (storedTasks) {
+          setTasks(storedTasks);
+          setCurrentTaskId(storedTasks.length);
+        }
+      } else {
+        // If user is not authenticated, redirect to login
+        navigate("/login");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  useEffect(() => {
+    // Update localStorage when tasks state changes
+    if (user) {
+      localStorage.setItem(user.uid, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
+
   const handleAddItem = useCallback(async (data) => {
     try {
       if (!data.title) {
