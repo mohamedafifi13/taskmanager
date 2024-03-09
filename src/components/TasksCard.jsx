@@ -5,20 +5,27 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  TextField,
   Typography,
   useTheme,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { IconPin, IconTrash } from "@tabler/icons";
+import { IconPin, IconTrash, IconEdit } from "@tabler/icons-react";
 import PushPinIcon from "@mui/icons-material/PushPin";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 function TaskCard({
   title,
   description,
+  dueDate,
   handleClickOpen,
   pinned,
   handlePinned,
   handleDelete,
+  id,
+  setEditingTaskId,
+  openEditModal,
 }) {
   const theme = useTheme();
 
@@ -47,19 +54,21 @@ function TaskCard({
             <Typography variant="h5" sx={{ color: theme.palette.primary.main }}>
               {title}
             </Typography>
-            <Button
-              onClick={(event) => {
-                event.stopPropagation();
-                handlePinned();
-              }}
-              onMouseDown={(event) => event.stopPropagation()}
-            >
-              {pinned ? (
-                <PushPinIcon />
-              ) : (
-                <IconPin color={theme.palette.primary.main} />
-              )}
-            </Button>
+            {pinned ? (
+              <Typography
+                variant="body1"
+                style={{ marginTop: 8, color: "green", fontWeight: 500 }}
+              >
+                Done ! Great Work
+              </Typography>
+            ) : (
+              <Typography
+                variant="body1"
+                style={{ marginTop: 8, color: "#333", fontWeight: 500 }}
+              >
+                Due Date: {dueDate}
+              </Typography>
+            )}
           </Stack>
         }
       />
@@ -67,9 +76,7 @@ function TaskCard({
         <Grid container spacing={1}>
           <Grid item>
             <Typography variant="subtitle2" color="inherit">
-              {description.split(" ").length > 10
-                ? description.split(" ").splice(0, 10).join(" ") + "..."
-                : description}
+              {description}
             </Typography>
           </Grid>
         </Grid>
@@ -77,10 +84,34 @@ function TaskCard({
       <CardActions sx={{ justifyContent: "flex-end" }}>
         <Grid item>
           <Button
+            onClick={(event) => {
+              event.stopPropagation();
+              handlePinned(id);
+            }}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            {pinned ? (
+              <CheckBoxIcon style={{ color: "green" }} />
+            ) : (
+              <CheckBoxOutlineBlankIcon color={theme.palette.primary.main} />
+            )}
+          </Button>
+          <Button
             size="small"
             onClick={(event) => {
               event.stopPropagation();
-              handleDelete();
+              setEditingTaskId(id);
+              openEditModal();
+            }}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <IconEdit color={theme.palette.primary.main} />
+          </Button>
+          <Button
+            size="small"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleDelete(id);
             }}
             onMouseDown={(event) => event.stopPropagation()}
           >

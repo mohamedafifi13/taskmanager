@@ -7,11 +7,10 @@ import TextField from "@mui/material/TextField";
 import { FieldValues, SubmitHandler, set, useForm } from "react-hook-form";
 
 import * as yup from "yup";
-// import { useAddNote } from "../apis/note-apis";
 import { toast } from "react-toastify";
 import { Typography } from "@mui/material";
 import { useEffect } from "react";
-const notify = () => toast.success("Note added!");
+const notify = () => toast.success("Task added!");
 function DrawerComponent({
   isDrawerOpen,
   toggleDrawer,

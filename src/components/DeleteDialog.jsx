@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import * as React from "react";
 
 const DeleteClosingForm = ({ taskId, open, handleClose, deleteTask }) => {
-  const notify = () => toast.success("Note deleted!");
+  const notify = () => toast.success("Task deleted!");
   const handleDelete = () => {
     deleteTask(taskId);
     notify();
@@ -29,10 +29,10 @@ const DeleteClosingForm = ({ taskId, open, handleClose, deleteTask }) => {
         aria-describedby="alert-dialog-description"
       >
         <>
-          <DialogTitle id="alert-dialog-title">{"Delete Post"}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">{"Delete Task"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Once you click the Delete button, your post will be deleted
+              Once you click the Delete button, your task will be deleted
               permanently. Are you sure you want to proceed with this action?
             </DialogContentText>
           </DialogContent>

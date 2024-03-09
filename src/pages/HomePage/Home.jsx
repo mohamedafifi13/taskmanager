@@ -4,10 +4,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import DrawerComponent from "../../components/AddingDrawer";
-import TasksGrid from "./TasksGrid";
+import TasksGrid from "../../components/TasksGrid";
 import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout";
-import TaskDialog from "./TaskDialog";
+import TaskDialog from "../../components/TaskDialog";
 import Autocomplete from "@mui/material/Autocomplete";
 import ClearIcon from "@mui/icons-material/Clear";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -36,7 +36,7 @@ const Home = () => {
     setIsOpenDeleteDialog(true);
     setDeletingTaskId(id);
   };
-  const notify = () => toast.success("Note added!");
+  const notify = () => toast.success("Task added!");
 
   const deleteTask = (id) => {
     const newTasks = tasks.filter((task) => task._id !== id);
@@ -51,8 +51,8 @@ const Home = () => {
       data = { ...data, _id: currentTaskId + 1, pinned: false };
       setCurrentTaskId(currentTaskId + 1);
 
-      setTasks((prevNotes) => {
-        return [...prevNotes, data];
+      setTasks((prevTasks) => {
+        return [...prevTasks, data];
       });
 
       toggleDrawer();
